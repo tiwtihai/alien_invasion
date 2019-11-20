@@ -21,3 +21,6 @@ class Settings:
         self.bullet_height = 15
         self.bullet_factor = 1
         self.bullet_color = 60, 60, 60
+
+        # 设置外星人有关参数
+        self.alien_factor=1

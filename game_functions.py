@@ -41,10 +41,11 @@ def destory_bullets(bullets):
             bullets.remove(bullet)
 
 
-def update_screen(game_settings, screen, ship, statusbar, bullets):
+def update_screen(game_settings, screen, ship, statusbar, bullets,alien):
     screen.fill(game_settings.bg_color)
     for bullet in bullets.sprites():
-        bullet.launch_bullet()
+        bullet.launch()
     ship.blitme()
+    alien.blitme()
     statusbar.print_text()
     pygame.display.flip()

@@ -19,5 +19,5 @@ class Bullet(Sprite):
         self.y -= self.factor
         self.rect.y = self.y
 
-    def launch_bullet(self):
+    def launch(self):
         pygame.draw.rect(self.screen, self.color, self.rect)
