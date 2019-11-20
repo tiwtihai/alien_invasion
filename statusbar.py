@@ -1,13 +1,18 @@
 import pygame
 
 
-class StausBar:
-    def __init__(self, screen):
+class StatusBar:
+    def __init__(self, screen, ship_x, ship_y, game_settings):
         self.screen = screen
-        self.textfontobj = pygame.font.SysFont('SimHei', 32)
-        self.textsurfaceobj = self.textfontobj.render('test', True,(0,0,255))
-        self.textrectobj = self.textsurfaceobj.get_rect()
-        self.textrectobj.center = (200, 150)
+        self.text_font_obj = pygame.font.SysFont(game_settings.statusbar_text_font, game_settings.statusbar_text_size)
+        self.text_surface = self.text_font_obj.render('x:%d, y:%d' % (ship_x, ship_y), True,
+                                                      game_settings.statusbar_text_color)
+        self.text_rect = self.text_surface.get_rect()
 
-    def printtext(self):
-        self.screen.blit(textsurfaceobj, textrectobj)
+    def update(self, ship_x, ship_y, game_settings):
+        self.text_surface = self.text_font_obj.render('x:%d, y:%d' % (ship_x, ship_y), True,
+                                                      game_settings.statusbar_text_color)
+        self.text_rect.topleft=game_settings.statusbar_starxy
+
+    def print_text(self):
+        self.screen.blit(self.text_surface, self.text_rect)

@@ -27,7 +27,8 @@ def check_events(ship):
                 ship.moving_down = False
 
 
-def update_screen(game_settings, screen, ship):
+def update_screen(game_settings, screen, ship, statusbar):
     screen.fill(game_settings.bg_color)
     ship.blitme()
+    statusbar.print_text()
     pygame.display.flip()

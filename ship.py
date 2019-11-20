@@ -12,6 +12,7 @@ class Ship:
         self.centerx = float(self.screen_rect.centerx)
         self.centery = float(self.screen_rect.bottom - self.rect.height / 2)
         self.rect.centerx = self.screen_rect.centerx
+        self.rect.bottom = self.screen_rect.bottom
 
         self.moving_right = False
         self.moving_left = False
