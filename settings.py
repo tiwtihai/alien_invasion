@@ -11,7 +11,13 @@ class Settings:
         self.ship_speed_factor = 1
 
         # statusbar设置
-        self.statusbar_text_color=(30, 144, 255)
-        self.statusbar_text_font='SimHei'
-        self.statusbar_text_size=16
-        self.statusbar_starxy=(0, 0)
+        self.statusbar_text_color = (30, 144, 255)
+        self.statusbar_text_font = 'SimHei'
+        self.statusbar_text_size = 16
+        self.statusbar_starxy = (0, 0)
+
+        # 设置子弹
+        self.bullet_width = 3
+        self.bullet_height = 15
+        self.bullet_factor = 1
+        self.bullet_color = 60, 60, 60
