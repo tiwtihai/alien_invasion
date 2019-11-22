@@ -3,17 +3,17 @@ from pygame.sprite import Sprite
 
 
 class Bullet(Sprite):
-    def __init__(self, screen, ship, game_settings):
+    def __init__(self, screen, ship, settings):
         super().__init__()
         self.screen = screen
 
-        self.rect = pygame.Rect(0, 0, game_settings.bullet_width, game_settings.bullet_height)
+        self.rect = pygame.Rect(0, 0, settings.bullet_width, settings.bullet_height)
         self.rect.centerx = ship.rect.centerx
         self.rect.top = ship.rect.top
 
         self.y = float(self.rect.y)
-        self.factor = game_settings.bullet_factor
-        self.color = game_settings.bullet_color
+        self.factor = settings.bullet_factor
+        self.color = settings.bullet_color
 
     def update(self):
         self.y -= self.factor

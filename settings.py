@@ -23,4 +23,8 @@ class Settings:
         self.bullet_color = 60, 60, 60
 
         # 设置外星人有关参数
-        self.alien_factor=1
+        self.alien_factor = 1
+        self.aliens_rows = 7
+        self.aliens_lines = 4
+        self.alien_drop_interval = 20
+        self.aliens_move_lr = 1  # 1往右移动，-1往左移动
