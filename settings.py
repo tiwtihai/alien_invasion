@@ -8,7 +8,8 @@ class Settings:
         self.screen_left = 200
 
         # 飞船移动速度
-        self.ship_speed_factor = 1
+        self.ship_speed_factor = 1.5
+        self.ship_limit = 3
 
         # statusbar设置
         self.statusbar_text_color = (30, 144, 255)

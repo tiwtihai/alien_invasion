@@ -23,13 +23,12 @@ def run_game():
     while True:
         gf.check_events(screen, ship, settings, bullets)
         ship.update()
-        bullets.update()
+        gf.update_bullets(bullets)
+        gf.update_aliens(aliens, settings.screen_width, settings.screen_height)
         statusbar.update(ship.centerx, ship.centery, len(bullets), len(aliens))
-        edge = gf.check_edge(aliens, settings.screen_width)
-        aliens.update(edge)
+        gf.check_fire(bullets, aliens, screen, settings)
+        # gf.check_gameover()
         gf.update_screen(settings, screen, ship, statusbar, bullets, aliens)
-        gf.destroy_bullets(bullets)
-        gf.destroy_aliens(aliens, settings.screen_height)
 
 
 run_game()

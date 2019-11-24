@@ -35,18 +35,6 @@ def check_events(screen, ship, settings, bullets):
                 ship.moving_down = False
 
 
-def destroy_bullets(bullets):
-    for bullet in bullets.copy():
-        if bullet.y < 0:
-            bullets.remove(bullet)
-
-
-def destroy_aliens(aliens, scree_bottom):
-    for alien in aliens.copy():
-        if alien.y > scree_bottom:
-            aliens.remove(alien)
-
-
 def update_screen(settings, screen, ship, statusbar, bullets, aliens):
     screen.fill(settings.bg_color)
     for alien in aliens.sprites():
@@ -90,3 +78,39 @@ def check_edge(aliens, screen_width):
     return False
 
 
+def update_bullets(bullets):
+    bullets.update()
+    destroy_bullets(bullets)
+
+
+def update_aliens(aliens, screen_width, screen_bottom):
+    aliens.update(check_edge(aliens, screen_width))
+    destroy_aliens(aliens, screen_bottom)
+
+
+def check_fire(bullets, aliens, screen, settings):
+    pygame.sprite.groupcollide(bullets, aliens, True, True)
+    if len(aliens) == 0:
+        bullets.empty()
+        creat_aliens(aliens, screen, settings)
+
+
+def check_game_over():
+    pass
+
+
+def check_hit(ship, aliens):
+    if pygame.sprite.spritecollide(ship, aliens):
+        return True
+
+
+def destroy_bullets(bullets):
+    for bullet in bullets.copy():
+        if bullet.y < 0:
+            bullets.remove(bullet)
+
+
+def destroy_aliens(aliens, scree_bottom):
+    for alien in aliens.copy():
+        if alien.y > scree_bottom:
+            aliens.remove(alien)
