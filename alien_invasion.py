@@ -27,7 +27,9 @@ def run_game():
         gf.update_aliens(aliens, settings.screen_width, settings.screen_height)
         statusbar.update(ship.centerx, ship.centery, len(bullets), len(aliens))
         gf.check_fire(bullets, aliens, screen, settings)
-        # gf.check_gameover()
+        if gf.check_hit(screen, ship, aliens, bullets, statusbar,settings):
+            ship = Ship(screen, settings.ship_speed_factor)
+#            print(settings.ship_limit)
         gf.update_screen(settings, screen, ship, statusbar, bullets, aliens)
 
 

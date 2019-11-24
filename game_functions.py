@@ -2,7 +2,8 @@ import sys
 import pygame
 from bullet import Bullet
 from alien import Alien
-
+from ship import Ship
+import time
 
 def check_events(screen, ship, settings, bullets):
     for event in pygame.event.get():
@@ -57,7 +58,8 @@ def creat_aliens(aliens, screen, settings):
     aliens_rows_max = int(screen_width / alien_width)
     if aliens_rows > aliens_rows_max:
         aliens_rows = aliens_rows_max
-    aliens_space_x = (screen_width - alien_width * aliens_rows) / (aliens_rows + 1)
+    aliens_space_x = (screen_width - alien_width *
+                      aliens_rows) / (aliens_rows + 1)
 
     aliens_lines = settings.aliens_lines
     aliens_space_y = alien_height / 2
@@ -66,7 +68,8 @@ def creat_aliens(aliens, screen, settings):
         for row in range(1, aliens_rows + 1):
             alien = Alien(screen, settings)
             alien.rect.x = aliens_space_x * row + alien_width * (row - 1)
-            alien.rect.y = -(aliens_space_y * (line - 1) + alien_height * line) + alien_height
+            alien.rect.y = -(aliens_space_y * (line - 1) +
+                             alien_height * line) + alien_height
             aliens.add(alien)
 
 
@@ -99,8 +102,12 @@ def check_game_over():
     pass
 
 
-def check_hit(ship, aliens):
-    if pygame.sprite.spritecollide(ship, aliens):
+def check_hit(screen, ship, aliens, bullets, statusbar, settings):
+    if pygame.sprite.spritecollideany(ship, aliens) and statusbar.ship_limit>0:
+        statusbar.ship_limit -= 1
+        bullets.empty()
+        aliens.empty()
+        ship = Ship(screen, settings.ship_speed_factor)
         return True
 
 
