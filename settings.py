@@ -15,7 +15,7 @@ class Settings:
         self.statusbar_text_color = (30, 144, 255)
         self.statusbar_text_font = 'SimHei'
         self.statusbar_text_size = 16
-        self.statusbar_starxy = (0, 0)
+        self.statusbar_starxy = (0, self.screen_height - self.statusbar_text_size - 1)
 
         # 设置子弹
         self.bullet_width = 3

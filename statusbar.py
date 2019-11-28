@@ -13,11 +13,11 @@ class StatusBar:
         self.text_font_obj = pygame.font.SysFont(
             self.text_font, self.text_size)
         self.text_surface = self.text_font_obj.render(self.text_contents
-                                                      % (ship_x, ship_y, bullets_num, aliens_num, self.ship_limit), True,
+                                                      % (ship_x, ship_y, bullets_num, aliens_num, self.ship_limit),
+                                                      True,
                                                       self.text_color)
         self.text_rect = self.text_surface.get_rect()
         self.update(ship_x, ship_y, bullets_num, aliens_num)
-
 
     def update(self, ship_x, ship_y, bullets_num, aliens_num):
         self.text_surface = self.text_font_obj.render(

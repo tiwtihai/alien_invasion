@@ -5,6 +5,7 @@ from alien import Alien
 from ship import Ship
 import time
 
+
 def check_events(screen, ship, settings, bullets):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -40,10 +41,10 @@ def update_screen(settings, screen, ship, statusbar, bullets, aliens):
     screen.fill(settings.bg_color)
     for alien in aliens.sprites():
         alien.blitme()
-    ship.blitme()
     statusbar.print_text()
     for bullet in bullets.sprites():
         bullet.launch()
+    ship.blitme()
     pygame.display.flip()
 
 
@@ -52,7 +53,6 @@ def creat_aliens(aliens, screen, settings):
     alien_width = alien_model.rect.width
     alien_height = alien_model.rect.height
     screen_width = settings.screen_width
-    # screen_height = settings.screen_height
 
     aliens_rows = settings.aliens_rows
     aliens_rows_max = int(screen_width / alien_width)
@@ -75,7 +75,6 @@ def creat_aliens(aliens, screen, settings):
 
 def check_edge(aliens, screen_width):
     for alien in aliens.sprites():
-        # print('%s:x->%d,y->%d' % (str(id(alien)), alien.rect.x, alien.rect.y))
         if alien.rect.right >= screen_width or alien.rect.left <= 0:
             return True
     return False
@@ -86,29 +85,53 @@ def update_bullets(bullets):
     destroy_bullets(bullets)
 
 
-def update_aliens(aliens, screen_width, screen_bottom):
-    aliens.update(check_edge(aliens, screen_width))
-    destroy_aliens(aliens, screen_bottom)
-
-
-def check_fire(bullets, aliens, screen, settings):
-    pygame.sprite.groupcollide(bullets, aliens, True, True)
-    if len(aliens) == 0:
+def update_aliens(aliens, bullets, screen, settings, game_alive):
+    aliens.update(check_edge(aliens, settings.screen_width))
+    destroy_aliens(aliens, settings.screen_height)
+    if len(aliens) == 0 and game_alive:
         bullets.empty()
         creat_aliens(aliens, screen, settings)
 
 
-def check_game_over():
-    pass
+def check_fire(bullets, aliens):
+    if pygame.sprite.groupcollide(bullets, aliens, True, True):
+        return True
+    return False
 
 
-def check_hit(screen, ship, aliens, bullets, statusbar, settings):
-    if pygame.sprite.spritecollideany(ship, aliens) and statusbar.ship_limit>0:
-        statusbar.ship_limit -= 1
+def check_game_over(status):
+    if status.ship_limit > 0:
+        status.game_alive = True
+    else:
+        status.game_alive = False
+
+
+def check_game_status(ship, aliens, bullets, status, screen_bottom):
+    if (check_hit(ship, aliens) or check_aliens_bottom(aliens, screen_bottom)) and status.game_alive:
+        status.ship_limit -= 1
+        if status.ship_limit > 0:
+            reset_status(ship, aliens, bullets, status)
+        time.sleep(0.5)
+
+
+def check_hit(ship, aliens):
+    if pygame.sprite.spritecollideany(ship, aliens):
+        return True
+    return False
+
+
+def reset_status(ship, aliens, bullets, status):
+    if status.game_alive is True:
         bullets.empty()
         aliens.empty()
-        ship = Ship(screen, settings.ship_speed_factor)
-        return True
+        ship.reset_xy()
+
+
+def check_aliens_bottom(aliens, screen_bottom):
+    for alien in aliens.copy():
+        if alien.y > screen_bottom - alien.rect.height:
+            return True
+    return False
 
 
 def destroy_bullets(bullets):
@@ -117,7 +140,7 @@ def destroy_bullets(bullets):
             bullets.remove(bullet)
 
 
-def destroy_aliens(aliens, scree_bottom):
+def destroy_aliens(aliens, screen_bottom):
     for alien in aliens.copy():
-        if alien.y > scree_bottom:
+        if alien.y > screen_bottom:
             aliens.remove(alien)
