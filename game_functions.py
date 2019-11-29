@@ -2,11 +2,10 @@ import sys
 import pygame
 from bullet import Bullet
 from alien import Alien
-from ship import Ship
 import time
 
 
-def check_events(screen, ship, settings, bullets):
+def check_events(screen, ship, settings, bullets, play_button, gamestatus):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
@@ -36,8 +35,15 @@ def check_events(screen, ship, settings, bullets):
             if event.key == pygame.K_DOWN:
                 ship.moving_down = False
 
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            if check_play_button(mouse_x, mouse_y, play_button.button_rect):
+                gamestatus.game_alive = True
+                if gamestatus.game_over:
+                    sys.exit()
 
-def update_screen(settings, screen, ship, statusbar, bullets, aliens):
+
+def update_screen(settings, screen, ship, statusbar, bullets, aliens, play_button, replay_button, gamestatus):
     screen.fill(settings.bg_color)
     for alien in aliens.sprites():
         alien.blitme()
@@ -45,6 +51,10 @@ def update_screen(settings, screen, ship, statusbar, bullets, aliens):
     for bullet in bullets.sprites():
         bullet.launch()
     ship.blitme()
+    if gamestatus.game_alive is False:
+        play_button.show_button()
+    if gamestatus.game_over:
+        replay_button.show_button()
     pygame.display.flip()
 
 
@@ -104,6 +114,7 @@ def check_game_over(status):
         status.game_alive = True
     else:
         status.game_alive = False
+        status.game_over = True
 
 
 def check_game_status(ship, aliens, bullets, status, screen_bottom):
@@ -116,6 +127,12 @@ def check_game_status(ship, aliens, bullets, status, screen_bottom):
 
 def check_hit(ship, aliens):
     if pygame.sprite.spritecollideany(ship, aliens):
+        return True
+    return False
+
+
+def check_play_button(mouse_x, mouse_y, button_rect):
+    if button_rect.collidepoint(mouse_x, mouse_y):
         return True
     return False
 
@@ -144,3 +161,9 @@ def destroy_aliens(aliens, screen_bottom):
     for alien in aliens.copy():
         if alien.y > screen_bottom:
             aliens.remove(alien)
+
+
+def set_btn_pos(button, pos):
+    button.button_rect.center = pos[0], pos[1] + 80
+    button.text_rect.center = button.button_rect.center
+    button.frame_rect.center = button.button_rect.center
