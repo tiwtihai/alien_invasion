@@ -5,7 +5,7 @@ from alien import Alien
 import time
 
 
-def check_events(screen, ship, settings, bullets, play_button, gamestatus):
+def check_events(screen, ship, aliens, settings, bullets, play_button, gamestatus, quit_button):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
@@ -37,13 +37,15 @@ def check_events(screen, ship, settings, bullets, play_button, gamestatus):
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            if check_play_button(mouse_x, mouse_y, play_button.button_rect):
-                gamestatus.game_alive = True
-                if gamestatus.game_over:
-                    sys.exit()
+            if check_button_click(mouse_x, mouse_y, play_button.button_rect):
+                gamestatus.game_alive = 2
+                gamestatus.ship_limit = settings.ship_limit
+                reset_status(ship, aliens, bullets, gamestatus)
+            if check_button_click(mouse_x, mouse_y, quit_button.button_rect):
+                sys.exit()
 
 
-def update_screen(settings, screen, ship, statusbar, bullets, aliens, play_button, replay_button, gamestatus):
+def update_screen(settings, screen, ship, statusbar, bullets, aliens, play_button, quit_button, status, msg=None):
     screen.fill(settings.bg_color)
     for alien in aliens.sprites():
         alien.blitme()
@@ -51,10 +53,11 @@ def update_screen(settings, screen, ship, statusbar, bullets, aliens, play_butto
     for bullet in bullets.sprites():
         bullet.launch()
     ship.blitme()
-    if gamestatus.game_alive is False:
+    if status.game_alive==1 or status.game_alive == 3:
         play_button.show_button()
-    if gamestatus.game_over:
-        replay_button.show_button()
+    if status.game_alive == 3:
+        quit_button.show_button()
+        msg.show_screen_msg()
     pygame.display.flip()
 
 
@@ -98,7 +101,7 @@ def update_bullets(bullets):
 def update_aliens(aliens, bullets, screen, settings, game_alive):
     aliens.update(check_edge(aliens, settings.screen_width))
     destroy_aliens(aliens, settings.screen_height)
-    if len(aliens) == 0 and game_alive:
+    if len(aliens) == 0 and game_alive == 2:
         bullets.empty()
         creat_aliens(aliens, screen, settings)
 
@@ -109,19 +112,24 @@ def check_fire(bullets, aliens):
     return False
 
 
-def check_game_over(status):
-    if status.ship_limit > 0:
-        status.game_alive = True
+def check_game_status(status):
+    if status.game_alive == 2:
+        pygame.mouse.set_visible(False)
     else:
-        status.game_alive = False
-        status.game_over = True
+        pygame.mouse.set_visible(True)
+
+    
 
 
-def check_game_status(ship, aliens, bullets, status, screen_bottom):
-    if (check_hit(ship, aliens) or check_aliens_bottom(aliens, screen_bottom)) and status.game_alive:
+
+def check_game_hit(ship, aliens, bullets, status, screen_bottom):
+    if (check_hit(ship, aliens) or check_aliens_bottom(aliens, screen_bottom)) and status.game_alive == 2:
         status.ship_limit -= 1
         if status.ship_limit > 0:
             reset_status(ship, aliens, bullets, status)
+            status.game_alive = 2
+        else:
+            status.game_alive = 3
         time.sleep(0.5)
 
 
@@ -131,14 +139,14 @@ def check_hit(ship, aliens):
     return False
 
 
-def check_play_button(mouse_x, mouse_y, button_rect):
+def check_button_click(mouse_x, mouse_y, button_rect):
     if button_rect.collidepoint(mouse_x, mouse_y):
         return True
     return False
 
 
 def reset_status(ship, aliens, bullets, status):
-    if status.game_alive is True:
+    if status.game_alive == 2:
         bullets.empty()
         aliens.empty()
         ship.reset_xy()
@@ -163,7 +171,7 @@ def destroy_aliens(aliens, screen_bottom):
             aliens.remove(alien)
 
 
-def set_btn_pos(button, pos):
-    button.button_rect.center = pos[0], pos[1] + 80
+def set_btn_pos(button, pos, offset):
+    button.button_rect.center = pos[0] + offset[0], pos[1] + offset[1]
     button.text_rect.center = button.button_rect.center
     button.frame_rect.center = button.button_rect.center
