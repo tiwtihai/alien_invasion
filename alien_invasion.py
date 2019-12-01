@@ -25,7 +25,7 @@ def run_game():
     play_button = Button(screen, '开始游戏')
     quit_button = Button(screen, '退出游戏(Q)')
     gf.set_btn_pos(quit_button, screen.get_rect().center, (0, 80))
-    msg = ScreenMsg(screen, '游戏结束')
+    msg = ScreenMsg(screen)
 
     while True:
         gf.check_events(screen, ship, aliens, settings, bullets, play_button, status, quit_button)
@@ -36,7 +36,7 @@ def run_game():
             gf.update_bullets(bullets)
             gf.update_aliens(aliens, bullets, screen, settings, status.game_alive)
             statusbar.update(ship.centerx, ship.centery, len(bullets), len(aliens), status.ship_limit)
-            gf.check_fire(bullets, aliens)
+            gf.check_fire(bullets, aliens, settings)
 
         gf.update_screen(settings, screen, ship, statusbar, bullets, aliens, play_button, quit_button, status, msg)
 

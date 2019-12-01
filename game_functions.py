@@ -22,6 +22,11 @@ def check_events(screen, ship, aliens, settings, bullets, play_button, gamestatu
             if event.key == pygame.K_f:
                 new_bullet = Bullet(screen, ship, settings)
                 bullets.add(new_bullet)
+            if event.key == pygame.K_p:
+                if gamestatus.game_alive == 2:
+                    gamestatus.game_alive = 4
+                elif gamestatus.game_alive == 4:
+                    gamestatus.game_alive = 2
             if event.key == pygame.K_q:
                 sys.exit()
 
@@ -45,7 +50,7 @@ def check_events(screen, ship, aliens, settings, bullets, play_button, gamestatu
                 sys.exit()
 
 
-def update_screen(settings, screen, ship, statusbar, bullets, aliens, play_button, quit_button, status, msg=None):
+def update_screen(settings, screen, ship, statusbar, bullets, aliens, play_button, quit_button, status, msg):
     screen.fill(settings.bg_color)
     for alien in aliens.sprites():
         alien.blitme()
@@ -53,10 +58,14 @@ def update_screen(settings, screen, ship, statusbar, bullets, aliens, play_butto
     for bullet in bullets.sprites():
         bullet.launch()
     ship.blitme()
-    if status.game_alive==1 or status.game_alive == 3:
+    if status.game_alive == 1 or status.game_alive == 3:
         play_button.show_button()
     if status.game_alive == 3:
         quit_button.show_button()
+        msg.update_msg('游戏结束')
+        msg.show_screen_msg()
+    if status.game_alive == 4:
+        msg.update_msg('游戏暂停(P)')
         msg.show_screen_msg()
     pygame.display.flip()
 
@@ -100,14 +109,17 @@ def update_bullets(bullets):
 
 def update_aliens(aliens, bullets, screen, settings, game_alive):
     aliens.update(check_edge(aliens, settings.screen_width))
-    destroy_aliens(aliens, settings.screen_height)
+    # destroy_aliens(aliens, settings.screen_height)
     if len(aliens) == 0 and game_alive == 2:
         bullets.empty()
         creat_aliens(aliens, screen, settings)
 
 
-def check_fire(bullets, aliens):
+def check_fire(bullets, aliens, settings):
     if pygame.sprite.groupcollide(bullets, aliens, True, True):
+        if len(aliens) <= 0:
+            settings.increase_speed()
+            print('%s,%s,%s' % (settings.ship_speed_factor, settings.alien_speed_factor, settings.bullet_speed_factor))
         return True
     return False
 
@@ -117,9 +129,6 @@ def check_game_status(status):
         pygame.mouse.set_visible(False)
     else:
         pygame.mouse.set_visible(True)
-
-    
-
 
 
 def check_game_hit(ship, aliens, bullets, status, screen_bottom):

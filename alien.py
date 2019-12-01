@@ -6,7 +6,7 @@ class Alien(Sprite):
     def __init__(self, screen, settings):
         super().__init__()
         self.screen = screen
-        self.factor = settings.alien_factor
+        self.factor = settings.alien_speed_factor
         self.image = pygame.image.load("images/alien.png")
         self.screen_rect = screen.get_rect()
         self.rect = self.image.get_rect()
