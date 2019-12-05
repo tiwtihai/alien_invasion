@@ -5,7 +5,7 @@ from alien import Alien
 import time
 
 
-def check_events(screen, ship, aliens, settings, bullets, play_button, gamestatus, quit_button):
+def check_events(screen, ship, aliens, settings, bullets, buttons, status, game_info):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
@@ -23,10 +23,12 @@ def check_events(screen, ship, aliens, settings, bullets, play_button, gamestatu
                 new_bullet = Bullet(screen, ship, settings)
                 bullets.add(new_bullet)
             if event.key == pygame.K_p:
-                if gamestatus.game_alive == 2:
-                    gamestatus.game_alive = 4
-                elif gamestatus.game_alive == 4:
-                    gamestatus.game_alive = 2
+                if status.game_alive == 2:
+                    status.game_alive = 4
+                elif status.game_alive == 4:
+                    status.game_alive = 2
+            if event.key == pygame.K_s:
+                play_button_click(status, settings, game_info, ship, aliens, bullets)
             if event.key == pygame.K_q:
                 sys.exit()
 
@@ -42,31 +44,29 @@ def check_events(screen, ship, aliens, settings, bullets, play_button, gamestatu
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            if check_button_click(mouse_x, mouse_y, play_button.button_rect):
-                gamestatus.game_alive = 2
-                gamestatus.ship_limit = settings.ship_limit
-                reset_status(ship, aliens, bullets, gamestatus)
-            if check_button_click(mouse_x, mouse_y, quit_button.button_rect):
+            if check_button_click(mouse_x, mouse_y, buttons.play_button_rect):
+                play_button_click(status, settings, game_info, ship, aliens, bullets)
+            if check_button_click(mouse_x, mouse_y, buttons.quit_button_rect):
                 sys.exit()
 
 
-def update_screen(settings, screen, ship, statusbar, bullets, aliens, play_button, quit_button, status, msg):
+def update_screen(settings, screen, ship, game_info, bullets, aliens, buttons, status, pop_msg):
     screen.fill(settings.bg_color)
     for alien in aliens.sprites():
         alien.blitme()
-    statusbar.print_text()
     for bullet in bullets.sprites():
         bullet.launch()
     ship.blitme()
     if status.game_alive == 1 or status.game_alive == 3:
-        play_button.show_button()
+        buttons.show_play_button()
     if status.game_alive == 3:
-        quit_button.show_button()
-        msg.update_msg('游戏结束')
-        msg.show_screen_msg()
+        buttons.show_quit_button()
+        pop_msg.update_msg('游戏结束')
+        pop_msg.show_screen_msg()
     if status.game_alive == 4:
-        msg.update_msg('游戏暂停(P)')
-        msg.show_screen_msg()
+        pop_msg.update_msg('游戏暂停(P)')
+        pop_msg.show_screen_msg()
+    game_info.show_game_info()
     pygame.display.flip()
 
 
@@ -109,17 +109,20 @@ def update_bullets(bullets):
 
 def update_aliens(aliens, bullets, screen, settings, game_alive):
     aliens.update(check_edge(aliens, settings.screen_width))
-    # destroy_aliens(aliens, settings.screen_height)
     if len(aliens) == 0 and game_alive == 2:
         bullets.empty()
         creat_aliens(aliens, screen, settings)
 
 
-def check_fire(bullets, aliens, settings):
+def check_fire(bullets, aliens, settings, status, game_info):
     if pygame.sprite.groupcollide(bullets, aliens, True, True):
+        status.score += settings.alien_point
+        game_info.prep_score()
+        if status.high_score<=status.score:
+            status.high_score=status.score
+            game_info.prep_high_score()
         if len(aliens) <= 0:
             settings.increase_speed()
-            print('%s,%s,%s' % (settings.ship_speed_factor, settings.alien_speed_factor, settings.bullet_speed_factor))
         return True
     return False
 
@@ -131,9 +134,10 @@ def check_game_status(status):
         pygame.mouse.set_visible(True)
 
 
-def check_game_hit(ship, aliens, bullets, status, screen_bottom):
+def check_game_hit(ship, aliens, bullets, status, screen_bottom, game_info):
     if (check_hit(ship, aliens) or check_aliens_bottom(aliens, screen_bottom)) and status.game_alive == 2:
         status.ship_limit -= 1
+        game_info.ship_list_pop()
         if status.ship_limit > 0:
             reset_status(ship, aliens, bullets, status)
             status.game_alive = 2
@@ -174,13 +178,12 @@ def destroy_bullets(bullets):
             bullets.remove(bullet)
 
 
-def destroy_aliens(aliens, screen_bottom):
-    for alien in aliens.copy():
-        if alien.y > screen_bottom:
-            aliens.remove(alien)
+def play_button_click(status, settings, game_info, ship, aliens, bullets):
+    status.game_alive = 2
+    status.ship_limit = settings.ship_limit
+    settings.init_dynamic_settings()
+    status.score = 0
+    game_info.prep_score()
+    game_info.prep_ships_left()
+    reset_status(ship, aliens, bullets, status)
 
-
-def set_btn_pos(button, pos, offset):
-    button.button_rect.center = pos[0] + offset[0], pos[1] + offset[1]
-    button.text_rect.center = button.button_rect.center
-    button.frame_rect.center = button.button_rect.center

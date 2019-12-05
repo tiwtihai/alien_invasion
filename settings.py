@@ -13,7 +13,7 @@ class Settings:
         self.statusbar_text_color = (30, 144, 255)
         self.statusbar_text_font = 'SimHei'
         self.statusbar_text_size = 16
-        self.statusbar_starxy = (0, self.screen_height - self.statusbar_text_size - 1)
+        self.statusbar_starxy = (10, self.screen_height - self.statusbar_text_size - 10)
 
         # 设置子弹
         self.bullet_width = 3
@@ -24,7 +24,7 @@ class Settings:
         self.aliens_rows = 7
         self.aliens_lines = 4
         self.alien_drop_interval = 20
-        
+
         self.init_dynamic_settings()
 
     def init_dynamic_settings(self):
@@ -37,9 +37,12 @@ class Settings:
 
         self.lv_increase_factor = 2
 
-    def increase_speed(self):
-        self.ship_speed_factor*=self.lv_increase_factor
-        self.bullet_speed_factor*=self.lv_increase_factor
-        self.alien_speed_factor*=self.lv_increase_factor
+        # 记分
+        self.alien_point = 50
 
-        
+    def increase_speed(self):
+        self.ship_speed_factor *= self.lv_increase_factor
+        self.bullet_speed_factor *= self.lv_increase_factor
+        self.alien_speed_factor *= self.lv_increase_factor
+
+        self.alien_point *= self.lv_increase_factor

@@ -1,7 +1,7 @@
 import pygame
 
 
-class ScreenMsg:
+class ScreenPopMsg:
     def __init__(self, screen, msg='游戏运行中'):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
