@@ -25,6 +25,8 @@ class Settings:
         self.aliens_lines = 4
         self.alien_drop_interval = 20
 
+        self.record_file = 'record.txt'
+
         self.init_dynamic_settings()
 
     def init_dynamic_settings(self):
@@ -32,11 +34,8 @@ class Settings:
         self.ship_speed_factor = 1.5
         self.bullet_speed_factor = 1
         self.alien_speed_factor = 1
-
         self.aliens_move_lr = 1  # 1往右移动，-1往左移动
-
-        self.lv_increase_factor = 2
-
+        self.lv_increase_factor = 1.5
         # 记分
         self.alien_point = 50
 
@@ -44,5 +43,5 @@ class Settings:
         self.ship_speed_factor *= self.lv_increase_factor
         self.bullet_speed_factor *= self.lv_increase_factor
         self.alien_speed_factor *= self.lv_increase_factor
-
+        self.alien_drop_interval *= self.lv_increase_factor
         self.alien_point *= self.lv_increase_factor

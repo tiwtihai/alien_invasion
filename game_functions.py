@@ -1,13 +1,16 @@
 import sys
-import pygame
-from bullet import Bullet
-from alien import Alien
 import time
+
+import pygame
+
+from alien import Alien
+from bullet import Bullet
 
 
 def check_events(screen, ship, aliens, settings, bullets, buttons, status, game_info):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            status.save_record()
             sys.exit()
 
         elif event.type == pygame.KEYDOWN:
@@ -30,6 +33,7 @@ def check_events(screen, ship, aliens, settings, bullets, buttons, status, game_
             if event.key == pygame.K_s:
                 play_button_click(status, settings, game_info, ship, aliens, bullets)
             if event.key == pygame.K_q:
+                status.save_record()
                 sys.exit()
 
         elif event.type == pygame.KEYUP:
@@ -47,6 +51,7 @@ def check_events(screen, ship, aliens, settings, bullets, buttons, status, game_
             if check_button_click(mouse_x, mouse_y, buttons.play_button_rect):
                 play_button_click(status, settings, game_info, ship, aliens, bullets)
             if check_button_click(mouse_x, mouse_y, buttons.quit_button_rect):
+                status.save_record()
                 sys.exit()
 
 
@@ -118,11 +123,15 @@ def check_fire(bullets, aliens, settings, status, game_info):
     if pygame.sprite.groupcollide(bullets, aliens, True, True):
         status.score += settings.alien_point
         game_info.prep_score()
-        if status.high_score<=status.score:
-            status.high_score=status.score
+        if status.high_score <= status.score:
+            status.high_score = status.score
             game_info.prep_high_score()
         if len(aliens) <= 0:
             settings.increase_speed()
+            status.level += 1
+            if status.high_level < status.level:
+                status.high_level = status.level
+            game_info.prep_level()
         return True
     return False
 
@@ -179,11 +188,11 @@ def destroy_bullets(bullets):
 
 
 def play_button_click(status, settings, game_info, ship, aliens, bullets):
-    status.game_alive = 2
-    status.ship_limit = settings.ship_limit
-    settings.init_dynamic_settings()
-    status.score = 0
-    game_info.prep_score()
-    game_info.prep_ships_left()
-    reset_status(ship, aliens, bullets, status)
-
+    if status.game_alive == 1 or status.game_alive == 3:
+        status.game_alive = 2
+        status.ship_limit = settings.ship_limit
+        settings.init_dynamic_settings()
+        status.score = 0
+        game_info.prep_score()
+        game_info.prep_ships_left()
+        reset_status(ship, aliens, bullets, status)

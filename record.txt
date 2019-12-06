@@ -1,0 +1,2 @@
+high_level=3
+high_score=10475.0

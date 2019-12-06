@@ -31,32 +31,43 @@ class GameInfo:
 
         # 初始化显示飞船生命个数
         self.ship_list = []
-        self.ship_img_width = int(self.ship.image.get_size()[0]*0.6)
-        self.ship_img_height = int(self.ship.image.get_size()[1]*0.6)
-        self.ship_img=pygame.image.load('./images/ship.png')
-        self.ship_img=pygame.transform.scale(self.ship_img, (self.ship_img_width, self.ship_img_height))
-
         # self.prep_ships_left()
 
+        # 初始化关卡数
+        self.level_color = (30, 30, 30)
+        self.level_font = pygame.font.SysFont('SimHei', 20)
+        self.prep_level()
+
+    def prep_level(self):
+        level_str = '第' + str(self.status.level) + '关'
+        self.level_img = self.level_font.render(level_str, True, self.level_color)
+        self.level_rect = self.level_img.get_rect()
+        self.level_rect.top = 10
+        self.level_rect.left = 10
+
     def prep_ships_left(self):
+        ship_img_width = int(self.ship.image.get_size()[0] * 0.6)
+        ship_img_height = int(self.ship.image.get_size()[1] * 0.6)
+        ship_img = pygame.image.load('./images/ship.png')
+        ship_img = pygame.transform.scale(ship_img, (ship_img_width, ship_img_height))
         for ship_left in range(self.status.ship_limit):
-            new_ship = self.ship_img
-            ship_rect = new_ship.get_rect()
+            ship_rect = ship_img.get_rect()
             ship_rect.bottom = self.screen_rect.height - 10
-            ship_rect.right = self.screen_rect.width-10 - ship_left*ship_rect.width
-            self.ship_list.append((new_ship, ship_rect))
-    
+            ship_rect.right = self.screen_rect.width - 10 - ship_left * ship_rect.width
+            self.ship_list.append((ship_img, ship_rect))
+        # print(self.ship_list)
+
     def ship_list_pop(self):
-        if len(self.ship_list)>0:
+        if len(self.ship_list) > 0:
             self.ship_list.pop()
 
     def prep_high_score(self):
         rounded_high_score = round(self.status.high_score, -1)
         high_score_str = '{:,}'.format(rounded_high_score)
-        high_score_str = '最高：'+high_score_str
+        high_score_str = '最高：' + high_score_str
         self.high_score_img = self.high_score_font.render(high_score_str, True, self.high_score_color)
         self.high_score_rect = self.high_score_img.get_rect()
-        self.high_score_rect.right = self.settings.screen_width-10
+        self.high_score_rect.right = self.settings.screen_width - 10
         self.high_score_rect.top = 10
 
     def prep_score(self):
@@ -79,5 +90,6 @@ class GameInfo:
         self.screen.blit(self.statusbar_surface, self.statusbar_rect)
         self.screen.blit(self.score_img, self.score_rect)
         self.screen.blit(self.high_score_img, self.high_score_rect)
+        self.screen.blit(self.level_img, self.level_rect)
         for ship_num in range(len(self.ship_list)):
             self.screen.blit(self.ship_list[ship_num][0], self.ship_list[ship_num][1])

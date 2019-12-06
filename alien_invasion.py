@@ -24,7 +24,7 @@ def run_game():
     gf.creat_aliens(aliens, screen, settings)
     status = GameStatus(settings)
     game_info = GameInfo(screen, ship, settings, 0, len(aliens), status)
-    buttons=Buttons(screen)
+    buttons = Buttons(screen)
     pop_msg = ScreenPopMsg(screen)
 
     while True:
